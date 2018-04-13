@@ -19,6 +19,6 @@ from labServer import views as labServerViews
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('image/<int:imageId>',labServerViews.transImg),
+    re_path('image/?',labServerViews.transImg),
     path('upImage',labServerViews.getImg),
 ]

@@ -3,50 +3,49 @@ import os
 import base64
 from django import forms
 
+#image为存储图片信息的列表,存储编码后的图像
+
 image=[1]
+getImgStates=False
+transImgStates=False
 
 class soundForm(forms.Form):
     soundData=forms.CharField()
 
 
 class imgForm(forms.Form):
-    image=forms.CharField()
+    data=forms.CharField()
 
 
-class imgFile(forms.Form):
-    imageFile=forms.FileField()
-# Create your views here.
-def transImg(request,imageId):
-    filePath=os.getcwd() + '/labServer/image/' + str(imageId) + '.jpg'
-
-    with open(filePath,"rb") as f:
-        img=f.read()
-
-    return HttpResponse(img,content_type="image/png")
-
-def recevSound(request):
-    form = soundForm(request.POST)
-
-    soundData = form.cleaned_data['soundData']
-    filePath=os.getcwd + '/sound/test.wav'
-    with open(filePath,"wb+") as f:
-        f.write(soundData)
-
-    return HttpResponse('save ok!')
+#将image中存储的数据解码后取出,并传输给请求对象
+#注意:此处并未验证请求者身份
+def transImg(request,):
+    transImgStates=False
+    img=base64.b64decode(image[0])
+    print(img)
 
 
+#    while True:
+#        if getImgStates==False:
+#            continue
+#        else:
+#            img=image[0]
+#            transImgStates=True
+#            break
+
+#    return HttpResponse(img)
+    return HttpResponse(img,content_type="image/jpg")
+
+
+#接收图像的函数,接收采用base64编码的图像,变量名为data
+#接收到图像后,将其存储到image[0]中,不解码
 def getImg(request):
+    getImgStates=False
     if request.method == 'POST':
-        filePath=os.getcwd() + '/labServer/image/' + '10.png'
-        image[0]=request.POST['image']
-        image[0]=base64.b64decode(image[0])
-        print(image[0])
-        with open(filePath,"wb+") as f:
-            f.write(image[0])
         form=imgForm(request.POST)
         if form.is_valid():
-            print(image)
-
+            image[0]=request.POST['data']
+    getImgStates=True
     return HttpResponse(request.POST)
 
 
