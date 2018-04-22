@@ -1,0 +1,47 @@
+22:15:49 **** Incremental Build of configuration Debug for project f4 ****
+make all 
+Building file: ../Src/main.c
+Invoking: MCU GCC Compiler
+/home/liguo/project/noneLab/noneLab-version-1.1/stm32/f4/Debug
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 '-D__weak=__attribute__((weak))' '-D__packed="__attribute__((__packed__))"' -DUSE_HAL_DRIVER -DSTM32F427xx -I"/home/liguo/project/noneLab/noneLab-version-1.1/stm32/f4/Inc" -I"/home/liguo/project/noneLab/noneLab-version-1.1/stm32/f4/Drivers/STM32F4xx_HAL_Driver/Inc" -I"/home/liguo/project/noneLab/noneLab-version-1.1/stm32/f4/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy" -I"/home/liguo/project/noneLab/noneLab-version-1.1/stm32/f4/Drivers/CMSIS/Device/ST/STM32F4xx/Include" -I"/home/liguo/project/noneLab/noneLab-version-1.1/stm32/f4/Drivers/CMSIS/Include"  -Og -g3 -Wall -fmessage-length=0 -ffunction-sections -c -fmessage-length=0 -MMD -MP -MF"Src/main.d" -MT"Src/main.o" -o "Src/main.o" "../Src/main.c"
+../Src/main.c: In function 'main':
+../Src/main.c:108:16: warning: pointer targets in passing argument 1 of 'joinDataBody' differ in signedness [-Wpointer-sign]
+   joinDataBody(dataBody,dataId,data);
+                ^~~~~~~~
+In file included from ../Src/main.c:42:0:
+/home/liguo/project/noneLab/noneLab-version-1.1/stm32/f4/Inc/dataConv.h:14:6: note: expected 'char *' but argument is of type 'uint8_t * {aka unsigned char *}'
+ void joinDataBody(char *dataBody,char *dataId,uint32_t *data);
+      ^~~~~~~~~~~~
+../Src/main.c:109:28: warning: pointer targets in passing argument 2 of 'creatDataFrame' differ in signedness [-Wpointer-sign]
+   creatDataFrame(dataFrame,dataBody);
+                            ^~~~~~~~
+In file included from ../Src/main.c:42:0:
+/home/liguo/project/noneLab/noneLab-version-1.1/stm32/f4/Inc/dataConv.h:15:6: note: expected 'char *' but argument is of type 'uint8_t * {aka unsigned char *}'
+ void creatDataFrame(char *dataFrame,char *dataBody);
+      ^~~~~~~~~~~~~~
+../Src/main.c:122:30: warning: pointer targets in passing argument 2 of 'HAL_UART_Transmit' differ in signedness [-Wpointer-sign]
+    HAL_UART_Transmit(&huart1,TxData,10,0xffff);
+                              ^~~~~~
+In file included from /home/liguo/project/noneLab/noneLab-version-1.1/stm32/f4/Inc/stm32f4xx_hal_conf.h:368:0,
+                 from /home/liguo/project/noneLab/noneLab-version-1.1/stm32/f4/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:46,
+                 from ../Src/main.c:41:
+/home/liguo/project/noneLab/noneLab-version-1.1/stm32/f4/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:645:19: note: expected 'uint8_t * {aka unsigned char *}' but argument is of type 'char *'
+ HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size, uint32_t Timeout);
+                   ^~~~~~~~~~~~~~~~~
+Finished building: ../Src/main.c
+ 
+Building target: f4.elf
+Invoking: MCU GCC Linker
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -specs=nosys.specs -specs=nano.specs -T"../STM32F427ZITx_FLASH.ld" -Wl,-Map=output.map -Wl,--gc-sections -o "f4.elf" @"objects.list"   -lm
+Finished building target: f4.elf
+ 
+make --no-print-directory post-build
+Generating binary and Printing size information:
+arm-none-eabi-objcopy -O binary "f4.elf" "f4.bin"
+arm-none-eabi-size "f4.elf"
+   text	   data	    bss	    dec	    hex	filename
+   9168	    120	   1648	  10936	   2ab8	f4.elf
+ 
+
+22:15:50 Build Finished (took 903ms)
+

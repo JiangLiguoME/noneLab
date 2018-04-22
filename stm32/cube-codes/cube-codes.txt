@@ -1,0 +1,48 @@
+Configuration	cube-codes
+STM32CubeMX 	4.25.0
+Date	04/18/2018
+MCU	STM32F103ZETx
+
+
+
+PERIPHERALS	MODES	FUNCTIONS	PINS
+SYS	No Debug	SYS_VS_ND	VP_SYS_VS_ND
+SYS	SysTick	SYS_VS_Systick	VP_SYS_VS_Systick
+TIM4	PWM Generation CH1	TIM4_CH1	PB6
+USART1	Asynchronous	USART1_RX	PA10
+USART1	Asynchronous	USART1_TX	PA9
+
+
+
+Pin Nb	PINs	FUNCTIONs	LABELs
+101	PA9	USART1_TX	
+102	PA10	USART1_RX	
+136	PB6	TIM4_CH1	
+
+
+
+SOFTWARE PROJECT
+
+Project Settings : 
+Project Name : cube-codes
+Project Folder : /home/liguo/project/noneLab/noneLab-version-1.1/stm32/cube-codes
+Toolchain / IDE : SW4STM32
+Firmware Package Name and Version : STM32Cube FW_F1 V1.6.1
+
+
+Code Generation Settings : 
+STM32Cube Firmware Library Package : Copy only the necessary library files
+Generate peripheral initialization as a pair of '.c/.h' files per peripheral : No
+Backup previously generated files when re-generating : No
+Delete previously generated files when not re-generated : Yes
+Set all free pins as analog (to optimize the power consumption) : No
+
+
+Toolchains Settings : 
+Compiler Optimizations : Balanced Size/Speed
+
+
+
+
+
+

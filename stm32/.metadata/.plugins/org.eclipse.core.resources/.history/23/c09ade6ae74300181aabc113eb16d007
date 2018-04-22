@@ -1,0 +1,34 @@
+/*
+ * dataConv.c
+ *
+ *  Created on: 2018年4月19日
+ *      Author: liguo
+ */
+#include "dataConv.h"
+
+void joinDataBody(char *dataBody,char *dataId,uint32_t *data)
+{
+
+    char index=0;
+    char tmp[4];
+    char id[2];
+    for(index=2;index<strlen((char *)(dataId));index++)
+    {
+
+        id[0]=dataId[index];
+        id[1]='\0';
+        sprintf(tmp,"%d",data[index]);
+        strcat(dataBody,id);
+        strcat(dataBody,tmp);
+    }
+
+}
+
+void creatDataFrame(char *dataFrame,char *dataBody)
+{
+    char header[3]="aa";
+    char end[3]="zz";
+    strcat(dataFrame,header);
+    strcat(dataFrame,dataBody);
+    strcat(dataFrame,end);
+}
