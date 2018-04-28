@@ -10,5 +10,6 @@ while True:
     data=requests.get(url)
     if data.content is not b'':
         print(data.content)
+        print(type(data.content))
     time.sleep(0.1)
 

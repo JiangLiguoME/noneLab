@@ -40,19 +40,16 @@
 #include "main.h"
 #include "stm32f1xx_hal.h"
 #include "dataConv.h"
-
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
-DMA_HandleTypeDef hdma_adc1;
 
 TIM_HandleTypeDef htim4;
 
 UART_HandleTypeDef huart1;
-UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
@@ -62,11 +59,9 @@ UART_HandleTypeDef huart2;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_DMA_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_TIM4_Init(void);
 static void MX_ADC1_Init(void);
-static void MX_USART2_UART_Init(void);
                                     
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
                                 
@@ -108,13 +103,10 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_DMA_Init();
   MX_USART1_UART_Init();
   MX_TIM4_Init();
   MX_ADC1_Init();
-  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-  HAL_ADC_Start(&hadc1);
 
   /* USER CODE END 2 */
 
@@ -127,53 +119,30 @@ int main(void)
   char dataBody[20]="\0";
   char dataFrame[dataFrameMaxLength]="\0";
 
-  joinDataBody(dataBody,dataId,data);
-  creatDataFrame(dataFrame,dataBody);
-  int num=1;
+  /*joinDataBody(dataBody,dataId,data);
+  creatDataFrame(dataFrame,dataBody);*/
 
   char adcStr[6];
   uint16_t adcData[5];
   while (1)
   {
+	  HAL_ADC_Start(&hadc1);
+
 	  HAL_Delay(500);
-      HAL_ADC_Start(&hadc1);
-	  //HAL_ADC_PollForConversion(&hadc1, 500);
-
-	  /*if(HAL_IS_BIT_SET(HAL_ADC_GetState(&hadc1), HAL_ADC_STATE_REG_EOC))
+	  dataFrame[0] = '\0';
+	  HAL_ADC_PollForConversion(&hadc1,0xfff);
+	  data[0]=HAL_ADC_GetValue(&hadc1);
+/*
+	  if(HAL_IS_BIT_SET(HAL_ADC_GetState(&hadc1), HAL_ADC_STATE_REG_EOC))
 	  {
-		  adcData = HAL_ADC_GetValue(&hadc1);
 	  }*/
-	  //dataFrame="\0";
-	  /*int dataTest[10]={1090,2034,1023,1023,1023};
 
-	  joinDataBody(dataBody,dataId,dataTest);
-	  creatDataFrame(dataFrame,dataBody);*/
-	 /* uint8_t TxData[7];
-	  num++;
-
-	  sprintf(TxData,"%d",num);*/
-	 // sprintf(adcStr,"%d",adcData[0]);
-	  //joinDataBody(dataBody,dataId,adcStr);
-	 // creatDataFrame(dataFrame,dataBody);
-	  //HAL_UART_Transmit(&huart1,adcStr,5,0xffff);
-      char i=1;
-      for(i=0;i<4;i++)
-
-      {
-
-      HAL_ADC_PollForConversion(&hadc1,0xffff);
-
-      adcData[i]=HAL_ADC_GetValue(&hadc1);
-      sprintf(adcStr,"%d",adcData[i]);
-      strcat(adcStr,"\n");
-
-	  //HAL_ADC_Stop(&hadc1);
-
-      }
-      joinDataBody(dataBody,dataId,adcData);
+      joinDataBody(dataBody,dataId,data);
       creatDataFrame(dataFrame,dataBody);
-	  HAL_UART_Transmit(&huart1,"hello\n",6,0xffff);
-	  HAL_UART_Transmit(&huart1,dataFrame,30,0xffff);
+
+      char *TxData;
+      sprintf(TxData,)
+	  HAL_UART_Transmit(&huart1,TxData,24,0xffff);
 
   /* USER CODE END WHILE */
 
@@ -244,16 +213,17 @@ static void MX_ADC1_Init(void)
 {
 
   ADC_ChannelConfTypeDef sConfig;
+  ADC_InjectionConfTypeDef sConfigInjected;
 
     /**Common config 
     */
   hadc1.Instance = ADC1;
-  hadc1.Init.ScanConvMode = ADC_SCAN_ENABLE;
+  hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
   hadc1.Init.ContinuousConvMode = ENABLE;
   hadc1.Init.DiscontinuousConvMode = DISABLE;
   hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc1.Init.NbrOfConversion = 4;
+  hadc1.Init.NbrOfConversion = 1;
   if (HAL_ADC_Init(&hadc1) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
@@ -261,7 +231,7 @@ static void MX_ADC1_Init(void)
 
     /**Configure Regular Channel 
     */
-  sConfig.Channel = ADC_CHANNEL_0;
+  sConfig.Channel = ADC_CHANNEL_1;
   sConfig.Rank = ADC_REGULAR_RANK_1;
   sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
@@ -269,26 +239,17 @@ static void MX_ADC1_Init(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
-    /**Configure Regular Channel 
+    /**Configure Injected Channel 
     */
-  sConfig.Rank = ADC_REGULAR_RANK_2;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
-
-    /**Configure Regular Channel 
-    */
-  sConfig.Rank = ADC_REGULAR_RANK_3;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
-
-    /**Configure Regular Channel 
-    */
-  sConfig.Rank = ADC_REGULAR_RANK_4;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  sConfigInjected.InjectedChannel = ADC_CHANNEL_1;
+  sConfigInjected.InjectedRank = ADC_INJECTED_RANK_1;
+  sConfigInjected.InjectedNbrOfConversion = 1;
+  sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+  sConfigInjected.ExternalTrigInjecConv = ADC_INJECTED_SOFTWARE_START;
+  sConfigInjected.AutoInjectedConv = DISABLE;
+  sConfigInjected.InjectedDiscontinuousConvMode = DISABLE;
+  sConfigInjected.InjectedOffset = 0;
+  if (HAL_ADCEx_InjectedConfigChannel(&hadc1, &sConfigInjected) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
@@ -352,40 +313,6 @@ static void MX_USART1_UART_Init(void)
 
 }
 
-/* USART2 init function */
-static void MX_USART2_UART_Init(void)
-{
-
-  huart2.Instance = USART2;
-  huart2.Init.BaudRate = 9600;
-  huart2.Init.WordLength = UART_WORDLENGTH_8B;
-  huart2.Init.StopBits = UART_STOPBITS_1;
-  huart2.Init.Parity = UART_PARITY_NONE;
-  huart2.Init.Mode = UART_MODE_TX_RX;
-  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
-  if (HAL_UART_Init(&huart2) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
-
-}
-
-/** 
-  * Enable DMA controller clock
-  */
-static void MX_DMA_Init(void) 
-{
-  /* DMA controller clock enable */
-  __HAL_RCC_DMA1_CLK_ENABLE();
-
-  /* DMA interrupt init */
-  /* DMA1_Channel1_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
-
-}
-
 /** Pinout Configuration
 */
 static void MX_GPIO_Init(void)
@@ -393,7 +320,6 @@ static void MX_GPIO_Init(void)
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
 }

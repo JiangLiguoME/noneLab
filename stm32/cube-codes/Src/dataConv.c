@@ -21,14 +21,14 @@ void joinDataBody(char *dataBody,char *dataId,uint32_t *data)
         strcat(dataBody,id);
         strcat(dataBody,tmp);
     }
-
+    strcat(dataBody,"\0");
 }
 
 void creatDataFrame(char *dataFrame,char *dataBody)
 {
     char header[3]="ss";
     char end[3]="ee\n";
-    strcat(dataFrame,header);
+    strcpy(dataFrame,header);
     strcat(dataFrame,dataBody);
     strcat(dataFrame,end);
 }
