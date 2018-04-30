@@ -11,19 +11,20 @@ image=[1]
 commandData=[False,'0']
 getImgStates=False
 transImgStates=False
+data=[False,'0']
 
 
 class soundForm(forms.Form):
     soundData=forms.CharField()
 
-
 class imgForm(forms.Form):
     data=forms.CharField()
-
 
 class commandForm(forms.Form):
     command=forms.CharField()
 
+class dataForm(forms.Form):
+    data=forms.CharField(max_length=200)
 
 #class dataForm(forms.Form):
 #    data=forms.CharField()
@@ -88,9 +89,11 @@ def transCommand(request):
 
 
 def getData(request):
-    data =json.loads(request.body.decode())
-    print(data)
-    #for i in data:
-    #    print(i)
-    #    print(data[i])
+    if request.method == 'POST':
+        form=dataForm(request.POST)
+        if form.is_valid():
+            data[1]=form.cleaned_data['data']
+            data[0]=True
+
+    print(commandData)
     return HttpResponse('Succeed to receive your data!')

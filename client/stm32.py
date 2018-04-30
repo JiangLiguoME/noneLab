@@ -6,13 +6,16 @@ import time
 import threading
 import requests
 import json
+import threading
 
 stm32=serial.Serial('/dev/ttyUSB0',9600)
 url = "http://127.0.0.1:8080/upData"
+OBJNUM=99
 
 class MCU():
-    def __init__(self,serialObj):
+    def __init__(self,serialObj,url):
         self.mcu=serialObj
+        self.url=url
         self.data=''
         self.command=''
         self.scanTime=0.5
@@ -40,16 +43,12 @@ class MCU():
 
     def transData(self):
     #接受字符串参数,并将其包装成字典后使用post方法上传到url中
-        time.sleep(self.scanTime)
-        dataTmp={}
-        dataDic={}
-
-        for i in range(len(data)):
-            dataTmp[str(i)] = data[i]
-        dataTmp['num'] = len(data)
-        dataDic = json.dumps(dataTmp)
-
-        a=requests.post(url,json=dataDic)
+        while self.getDataState == True:
+            if int(self.data[0]) == OBJNUM:
+                dataDir={'data':self.data[1]}
+                print("开始上传")
+                req=requests.post(self.url,data=dataDir)
+                print("上传成功")
     #    print(a.content)
 
     def getData(self):
@@ -62,20 +61,21 @@ class MCU():
     #        将dataList上传至服务器
         self.getDataState=False
         self.data=''
-        dataList=[]
         count=100
 
         while True:
+            time.sleep(1)
             if self.getDataState is True:
                 while self.getDataState:
                     dataTmp=self.mcu.read()
                     if dataTmp == b'e':
                         if self.mcu.read() == b'e':
                             self.data= self.data.split('-')
-                            print(self.data)
                             if self.data[0] == '':
                                 del self.data[0]
                             #上传数据至服务器的函数upData(data)
+                            print(int(self.data[0]))
+                            self.transData()
                             self.getDataState = False
                             self.data=''
                             break
@@ -94,6 +94,5 @@ class MCU():
 #t2.start()
 #t1.join()
 #t2.join()
-test=MCU(stm32)
+test=MCU(stm32,url)
 test.getData()
-
